@@ -1,0 +1,983 @@
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap");
+
+// ── Tokens ──────────────────────────────────────────────────────
+$bg: #292b2a;
+$surface: #efe9d8;
+$surface-alt: #e5ddc3;
+$border: #c6bd9d;
+$border-strong: #a69b79;
+
+$ink: #1c2620;
+$ink-soft: #3f493f;
+$ink-muted: #6b6252;
+
+$primary: #b6862c;
+$primary-dark: #72551f;
+$primary-tint: #f3e8cc;
+
+$success: #28734f;
+$success-tint: #dcebdd;
+$warning: #805a17;
+$warning-tint: #f3e6c5;
+$danger: #a63832;
+$danger-tint: #f2dcd7;
+
+$font:
+  "Instrument Sans",
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI",
+  Roboto,
+  "Helvetica Neue",
+  Arial,
+  sans-serif;
+
+$radius-sm: 6px;
+$radius-md: 10px;
+$radius-lg: 14px;
+
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.18);
+$shadow-md: 0 4px 14px rgba(0, 0, 0, 0.24);
+
+$nav-width: 220px;
+$side-width: 290px;
+$sticky-top: 24px;
+
+$bp-desktop: 1100px;
+$bp-tablet: 900px;
+$bp-phone: 760px;
+
+@mixin focus-ring {
+  outline: 2px solid $primary;
+  outline-offset: 2px;
+}
+
+@mixin panel {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+// Hover styles only on devices that really hover (avoids "stuck" hover on phones)
+@mixin hover-only {
+  @media (hover: hover) {
+    @content;
+  }
+}
+
+// ── Base ────────────────────────────────────────────────────────
+.interview-page,
+.loading-screen {
+  font-family: $font;
+  color: #ecebe3;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+
+.loading-screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  background: $bg;
+
+  h1 {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #ecebe3;
+  }
+}
+
+.interview-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: $bg;
+  padding: 32px 24px 64px;
+}
+
+.interview-layout {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: $nav-width minmax(0, 1fr) $side-width;
+  gap: 28px;
+  align-items: start;
+}
+
+// ── Left navigation ─────────────────────────────────────────────
+.interview-nav {
+  @include panel;
+  position: sticky;
+  top: $sticky-top;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &__label {
+    margin: 4px 10px 8px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: $ink-muted;
+  }
+
+  &__item {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: $ink-soft;
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: $radius-md;
+    cursor: pointer;
+    position: relative;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+
+    @include hover-only {
+      &:hover {
+        background: $surface-alt;
+        color: $ink;
+      }
+    }
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+
+    &--active {
+      background: $primary-tint;
+      color: $primary-dark;
+      font-weight: 600;
+
+      &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 10px;
+        bottom: 10px;
+        width: 3px;
+        border-radius: 0 3px 3px 0;
+        background: $primary;
+      }
+
+      @include hover-only {
+        &:hover {
+          background: $primary-tint;
+          color: $primary-dark;
+        }
+      }
+    }
+  }
+}
+
+// ── Center content ──────────────────────────────────────────────
+.interview-content {
+  @include panel;
+  min-width: 0;
+  padding: 28px 32px 32px;
+  min-height: 480px;
+
+  > section > p {
+    color: $ink-muted;
+    font-size: 0.9375rem;
+    padding: 24px;
+    text-align: center;
+    background: $surface-alt;
+    border: 1px dashed $border-strong;
+    border-radius: $radius-md;
+  }
+}
+
+.content-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding-bottom: 18px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid $border;
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: $ink;
+  }
+
+  span {
+    flex-shrink: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: $ink-soft;
+    background: $surface-alt;
+    border: 1px solid $border;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+}
+
+// ── Question cards ──────────────────────────────────────────────
+.q-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.q-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  overflow: hidden;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  @include hover-only {
+    &:hover {
+      border-color: $border-strong;
+    }
+  }
+
+  &:has(.q-card__body) {
+    border-color: rgba($primary, 0.45);
+    box-shadow: $shadow-md;
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+
+    @include hover-only {
+      &:hover {
+        background: $surface-alt;
+      }
+    }
+  }
+
+  &__index {
+    flex-shrink: 0;
+    min-width: 34px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    margin-top: 1px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: $primary-dark;
+    background: $primary-tint;
+    border-radius: $radius-sm;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__question {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: $ink;
+    overflow-wrap: anywhere;
+  }
+
+  &__chevron {
+    flex-shrink: 0;
+    font-size: 1.125rem;
+    line-height: 26px;
+    color: $ink-muted;
+    transition:
+      transform 0.2s ease,
+      color 0.2s ease;
+
+    &--open {
+      transform: rotate(180deg);
+      color: $primary;
+    }
+  }
+
+  &__body {
+    padding: 4px 18px 20px 66px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    animation: q-reveal 0.2s ease;
+  }
+
+  &__section {
+    p {
+      margin: 8px 0 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: $ink-soft;
+      max-width: 72ch;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__tag {
+    display: inline-block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    color: $primary-dark;
+    background: $primary-tint;
+  }
+
+  // Model answer gets a distinct tone from the intention tag
+  &__section + &__section &__tag {
+    color: $success;
+    background: $success-tint;
+  }
+}
+
+@keyframes q-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ── Road map (a real sequence, so it reads as a timeline) ───────
+.roadmap-list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-left: 30px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 9px;
+    top: 14px;
+    bottom: 14px;
+    width: 2px;
+    background: $border;
+    border-radius: 2px;
+  }
+}
+
+.roadmap-day {
+  position: relative;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: 18px 20px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: -27px;
+    top: 22px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: $surface;
+    border: 3px solid $primary;
+    box-sizing: content-box;
+    transform: translateX(-3px);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin-bottom: 12px;
+
+    h3 {
+      margin: 0;
+      min-width: 0;
+      font-size: 1.0625rem;
+      font-weight: 600;
+      line-height: 1.4;
+      color: $ink;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__badge {
+    flex-shrink: 0;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #1c2620;
+    background: $primary;
+    padding: 4px 11px;
+    border-radius: 999px;
+  }
+
+  &__tasks {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    li {
+      position: relative;
+      padding-left: 22px;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      color: $ink-soft;
+      overflow-wrap: anywhere;
+
+      &::before {
+        content: "";
+        position: absolute;
+        left: 2px;
+        top: 0.6em;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: $border-strong;
+      }
+    }
+  }
+}
+
+// ── Right sidebar ───────────────────────────────────────────────
+.interview-sidebar {
+  position: sticky;
+  top: $sticky-top;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.match-score,
+.skill-gaps {
+  @include panel;
+  padding: 20px;
+}
+
+.match-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+
+  &__label {
+    align-self: flex-start;
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: $ink;
+  }
+
+  &__ring {
+    --ring: #{$primary};
+    --ring-tint: #{$primary-tint};
+
+    width: 132px;
+    height: 132px;
+    border-radius: 50%;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    padding-top: 40px;
+    box-sizing: border-box;
+    border: 10px solid var(--ring);
+    background: var(--ring-tint);
+    color: $ink;
+
+    &.score--high {
+      --ring: #{$success};
+      --ring-tint: #{$success-tint};
+    }
+
+    &.score--mid {
+      --ring: #{$warning};
+      --ring-tint: #{$warning-tint};
+    }
+
+    &.score--low {
+      --ring: #{$danger};
+      --ring-tint: #{$danger-tint};
+    }
+  }
+
+  &__value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__pct {
+    margin-left: 2px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $ink-soft;
+  }
+}
+
+.skill-gaps {
+  min-width: 0;
+
+  &__label {
+    margin: 0 0 14px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: $ink;
+  }
+
+  &__empty {
+    margin: 0;
+    font-size: 0.875rem;
+    color: $ink-muted;
+  }
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+.skill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 100%;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.25;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid $border;
+  color: $ink-soft;
+  background: $surface-alt;
+
+  &::before {
+    content: "";
+    flex-shrink: 0;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: $ink-muted;
+  }
+
+  &--high,
+  &--critical {
+    color: $danger;
+    background: $danger-tint;
+    border-color: rgba($danger, 0.2);
+    &::before {
+      background: $danger;
+    }
+  }
+
+  &--medium,
+  &--moderate {
+    color: $warning;
+    background: $warning-tint;
+    border-color: rgba($warning, 0.25);
+    &::before {
+      background: $warning;
+    }
+  }
+
+  &--low,
+  &--minor {
+    color: $success;
+    background: $success-tint;
+    border-color: rgba($success, 0.2);
+    &::before {
+      background: $success;
+    }
+  }
+}
+
+// ── Interview page: tablet ──────────────────────────────────────
+@media (max-width: $bp-desktop) {
+  .interview-layout {
+    grid-template-columns: $nav-width minmax(0, 1fr);
+  }
+
+  // Score and skill gaps move above the content
+  .interview-sidebar {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    position: static;
+    flex-direction: row;
+    align-items: stretch;
+
+    > * {
+      flex: 1;
+    }
+  }
+
+  .interview-nav {
+    grid-row: 2;
+  }
+
+  .interview-content {
+    grid-row: 2;
+  }
+}
+
+// ── Interview page: phone ───────────────────────────────────────
+@media (max-width: $bp-phone) {
+  .interview-page {
+    padding: 12px 12px calc(40px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .interview-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  // Summary: score on one line, skill gaps below
+  .interview-sidebar {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .match-score,
+  .skill-gaps {
+    padding: 16px;
+  }
+
+  .match-score {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    &__label {
+      align-self: center;
+    }
+
+    &__ring {
+      width: 88px;
+      height: 88px;
+      border-width: 7px;
+      padding-top: 24px;
+    }
+
+    &__value {
+      font-size: 1.75rem;
+    }
+
+    &__pct {
+      font-size: 0.875rem;
+    }
+  }
+
+  // Sections become a sticky tab bar
+  .interview-nav {
+    grid-row: 2;
+    position: sticky;
+    top: 8px;
+    z-index: 10;
+    flex-direction: row;
+    gap: 6px;
+    padding: 6px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &__label {
+      display: none;
+    }
+
+    &__item {
+      flex: 1 0 auto;
+      min-height: 44px;
+      padding: 10px 14px;
+      white-space: nowrap;
+      text-align: center;
+      scroll-snap-align: start;
+
+      &--active::before {
+        display: none;
+      }
+    }
+  }
+
+  .interview-content {
+    grid-row: 3;
+    padding: 18px 14px 22px;
+    min-height: 0;
+  }
+
+  .content-header {
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+
+    h2 {
+      font-size: 1.25rem;
+    }
+  }
+
+  .q-card {
+    &__header {
+      gap: 10px;
+      padding: 14px;
+    }
+
+    &__index {
+      min-width: 30px;
+      padding: 0 6px;
+    }
+
+    &__question {
+      font-size: 0.9375rem;
+    }
+
+    &__body {
+      padding: 2px 14px 16px;
+      gap: 14px;
+    }
+
+    &__section p {
+      font-size: 0.9375rem;
+      line-height: 1.65;
+    }
+  }
+
+  // Timeline: tighter gutter
+  .roadmap-list {
+    gap: 14px;
+    padding-left: 24px;
+
+    &::before {
+      left: 5px;
+    }
+  }
+
+  .roadmap-day {
+    padding: 14px;
+
+    &::before {
+      left: -24px;
+    }
+
+    &__header h3 {
+      font-size: 1rem;
+    }
+  }
+}
+
+@media (max-width: 402px) {
+  .interview-nav {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    scroll-snap-type: none;
+
+    &__item {
+      flex: 1 1 calc(50% - 6px);
+      min-width: 0;
+      white-space: normal;
+      line-height: 1.25;
+
+      &:last-child {
+        flex-basis: 100%;
+      }
+    }
+  }
+}
+
+// ── Home: previous reports ──────────────────────────────────────
+.recent-reports {
+  width: 100%;
+  max-width: 1100px;
+  margin: 56px auto 0;
+  padding: 0 24px 64px;
+  box-sizing: border-box;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid $border;
+    color: #ecebe3;
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #ecebe3;
+    }
+
+    span {
+      font-size: 1.8125rem;
+      font-weight: 700;
+      color: $ink-soft;
+      background: $surface-alt;
+      border: 1px solid $border;
+      padding: 2px 10px;
+      border-radius: 999px;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+.report-card {
+  appearance: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  padding: 18px;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 12px;
+  box-shadow: $shadow-sm;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+
+  @include hover-only {
+    &:hover {
+      border-color: rgba($primary, 0.5);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  &:active {
+    border-color: rgba($primary, 0.5);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  &__title {
+    margin: 0;
+    min-width: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: $ink;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+  }
+
+  &__score {
+    flex-shrink: 0;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-variant-numeric: tabular-nums;
+
+    &--high {
+      color: $success;
+      background: $success-tint;
+    }
+    &--mid {
+      color: $warning;
+      background: $warning-tint;
+    }
+    &--low {
+      color: $danger;
+      background: $danger-tint;
+    }
+  }
+
+  &__date {
+    margin: auto 0 0;
+    padding-top: 12px;
+    border-top: 1px solid $border;
+    font-size: 0.8125rem;
+    color: $ink-muted;
+  }
+}
+
+// Tablet: 2 side by side
+@media (max-width: $bp-tablet) {
+  .recent-reports__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+// Phone: stack
+@media (max-width: 600px) {
+  .recent-reports {
+    margin-top: 36px;
+    padding: 0 16px calc(40px + env(safe-area-inset-bottom, 0px));
+
+    &__header h2 {
+      font-size: 1.125rem;
+    }
+
+    &__grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+  }
+
+  .report-card {
+    padding: 16px;
+    gap: 12px;
+  }
+}
+
+// ── Reduced motion ──────────────────────────────────────────────
+@media (prefers-reduced-motion: reduce) {
+  .q-card__body {
+    animation: none;
+  }
+
+  .q-card,
+  .q-card__chevron,
+  .interview-nav__item,
+  .report-card {
+    transition: none;
+  }
+}

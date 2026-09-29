@@ -1,0 +1,371 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap');
+
+// ---- Tokens ---------------------------------------------------------------
+
+$ink: #292b2a;       // desk background
+$ink-soft: #223529;  // panel shadows / recessed areas
+$paper: #efe9d8;     // panel surface
+$paper-dim: #e5ddc3; // input surface on paper
+$line: #c6bd9d;      // hairline on paper
+$brass: #b6862c;
+$brass-light: #d8ab52;
+
+$text-on-paper: #1c2620;
+$text-muted-on-paper: #6b6252;
+$text-on-ink: #ecebe3;
+$text-muted-on-ink: #93a396;
+
+$font-display: 'Lora', Georgia, serif;
+$font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+$radius: 3px;
+$max-width: 1080px;
+
+@mixin paper-texture {
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(#000, 0.015) 0px,
+      rgba(#000, 0.015) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+// ---- Layout ----------------------------------------------------------------
+
+.home {
+  position: relative;
+  min-height: 100vh;
+  background: $ink;
+  background-image: radial-gradient(circle at 20% 0%, lighten($ink, 4%) 0%, $ink 55%);
+  color: $text-on-ink;
+  font-family: $font-body;
+  padding: 4rem 1.5rem 5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &__logout {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    padding: 0.65rem 1rem;
+    border: 1px solid rgba($text-on-ink, 0.35);
+    border-radius: $radius;
+    background: transparent;
+    color: $text-on-ink;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+      background: rgba($text-on-ink, 0.1);
+      border-color: $text-on-ink;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $brass-light;
+      outline-offset: 3px;
+    }
+  }
+
+  &__header {
+    max-width: 640px;
+    text-align: left;
+    width: 100%;
+    max-width: $max-width;
+    margin-bottom: 2.75rem;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-weight: 600;
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: $text-on-ink;
+    margin: 0 0 0.75rem;
+    max-width: 20ch;
+  }
+
+  &__subtitle {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: $text-muted-on-ink;
+    margin: 0;
+    max-width: 52ch;
+  }
+
+  &__desk {
+    width: 100%;
+    max-width: $max-width;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 1.75rem;
+    align-items: stretch;
+    
+
+    @media (max-width: 860px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  &__footer {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .home {
+    padding-top: 5.5rem;
+
+    &__logout {
+      top: 1rem;
+      right: 1rem;
+    }
+  }
+}
+
+//--- Show Error----------------------------------------------
+.show_error {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #b42318;
+  background-color: #fef3f2;
+  border: 1px solid #fecdca;
+  border-left: 4px solid #d92d20;
+  border-radius: 6px;
+  overflow-wrap: anywhere;
+  animation: fadeSlideIn 0.25s ease-out;
+
+  // Warning icon before the text
+  &::before {
+    content: "!";
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    background-color: #d92d20;
+    border-radius: 50%;
+  }
+
+  // Hide the box completely when there's no error text
+  &:empty {
+    display: none;
+  }
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ---- Panels ------------------------------------------------------------------
+
+.panel {
+  background: $paper;
+  @include paper-texture;
+  border-radius: $radius;
+  padding: 1.5rem 1.5rem 1.65rem;
+  box-shadow:
+    0 1px 0 rgba(#000, 0.4),
+    0 18px 30px -20px rgba(#000, 0.65);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-top: 3px solid $brass;
+
+  &__label {
+    display: block;
+    font-family: $font-display;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1rem;
+    color: $text-on-paper;
+    margin-bottom: 0.85rem;
+  }
+
+  &--listing {
+    min-height: 420px;
+
+    @media (max-width: 860px) {
+      min-height: 260px;
+    }
+  }
+
+  &--about {
+    flex: 1;
+  }
+}
+
+.panel__field {
+  flex: 1;
+  width: 100%;
+  resize: none;
+  border: 1px solid $line;
+  border-radius: 2px;
+  background: $paper-dim;
+  color: $text-on-paper;
+  font-family: $font-body;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  padding: 0.9rem 1rem;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: $text-muted-on-paper;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $brass;
+    outline-offset: 2px;
+    background: lighten($paper-dim, 2%);
+  }
+
+  &--listing {
+    min-height: 320px;
+  }
+
+  &--about {
+    min-height: 140px;
+  }
+}
+
+// ---- Upload slot ---------------------------------------------------------------
+
+.upload-slot {
+  position: relative;
+  border: 1.5px dashed $line;
+  border-radius: 2px;
+  background: $paper-dim;
+  padding: 1.6rem 1rem;
+  text-align: center;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:has(.upload-slot__input:focus-visible) {
+    border-color: $brass;
+    outline: 2px solid $brass;
+    outline-offset: 2px;
+  }
+
+  &:hover {
+    border-color: $brass-light;
+  }
+
+  &__input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  &__hint {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    pointer-events: none;
+  }
+
+  &__hint-main {
+    font-size: 0.92rem;
+    color: $text-on-paper;
+  }
+
+  &__hint-sub {
+    font-size: 0.78rem;
+    color: $text-muted-on-paper;
+  }
+}
+
+// ---- Generate button -------------------------------------------------------------
+
+.generate-btn {
+  margin: 20px;
+  position: relative;
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background: radial-gradient(circle at 35% 30%, $brass-light, $brass 65%);
+  color: $ink;
+  font-family: $font-display;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 10px 24px -8px rgba(#000, 0.55),
+    inset 0 1px 1px rgba(#fff, 0.5);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 14px 28px -8px rgba(#000, 0.6),
+      inset 0 1px 1px rgba(#fff, 0.5);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    outline: 3px solid $text-on-ink;
+    outline-offset: 4px;
+  }
+
+  &__ring {
+    position: absolute;
+    inset: 8px;
+    border-radius: 50%;
+    border: 1px solid rgba($ink, 0.35);
+    pointer-events: none;
+  }
+
+  &__label {
+    position: relative;
+  }
+}
