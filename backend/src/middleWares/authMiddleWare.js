@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+require("dotenv").config(); 
 const tokenBlackListModel =require('../models/tokenBlackListModel')
 async function authUser(req, res, next) {
   const token = req.cookies.token;

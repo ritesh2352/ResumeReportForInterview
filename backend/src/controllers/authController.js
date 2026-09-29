@@ -1,118 +1,121 @@
-const userModle = require("../models/userModel");
-const  tokenBlackListModel = require("../models/tokenBlackListModel")
+const userModel = require("../models/userModel");
+const tokenBlackListModel = require("../models/tokenBlackListModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-/**
- * @Name registerUser
- * @description reister  a new user,expect email,userName and password
- * @access Publci
- */
+
+const isProd = process.env.NODE_ENV === "production";
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: isProd,                    // HTTPS only in production
+  sameSite: isProd ? "none" : "lax", // cross-domain on Render, simple locally
+  maxAge: 24 * 60 * 60 * 1000,       // 1 day, matches the JWT expiry
+};
+
+function signToken(user) {
+  return jwt.sign(
+    { id: user._id, userName: user.userName },
+    process.env.JWT_SECRET,
+    { expiresIn: "1d" }
+  );
+}
+
 async function registerUser(req, res) {
-  const { userName, email, password } = req.body;
+  try {
+    const { userName, email, password } = req.body;
 
-  if (!userName || !email || !password) {
-    return res
-      .status(400)
-      .json({ message: "plese provide userName email password" });
-  }
-  const userAlreadyExist = await userModle.findOne({
-    $or: [{ userName }, { email }],
-  });
+    if (!userName || !email || !password) {
+      return res
+        .status(400)
+        .json({ message: "please provide userName, email and password" });
+    }
 
-  if (userAlreadyExist) {
-    if (userAlreadyExist.userName === userName) {
-      return res.status(400).json({ message: "userName already exist" });
-    } else if (userAlreadyExist.email === email) {
+    const userAlreadyExist = await userModel.findOne({
+      $or: [{ userName }, { email }],
+    });
+
+    if (userAlreadyExist) {
+      if (userAlreadyExist.userName === userName) {
+        return res.status(400).json({ message: "userName already exists" });
+      }
       return res.status(400).json({ message: "email already registered" });
     }
+
+    const hash = await bcrypt.hash(password, 10);
+    const user = await userModel.create({ userName, email, password: hash });
+
+    res.cookie("token", signToken(user), cookieOptions);
+
+    return res.status(201).json({
+      message: "user registered successfully",
+      user: { id: user._id, userName: user.userName, email: user.email },
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "server error" });
   }
-  const hash = await bcrypt.hash(password, 10);
+}
 
-  const user = await userModle.create({
-    userName,
-    email,
-    password: hash,
-  });
+async function loginUser(req, res) {
+  try {
+    const { email, password } = req.body;
 
-  const token=jwt.sign(
-    {id:user._id,userNmae:user.userName},
-    process.env.JWT_SECRET,
-    {expiresIn:"1d"}
-  )
-  res.cookie("token",token)
-  res.status(200).json({message:"user registered successfully",
-    user:{
-      id:user._id,
-      userName:user.userName,
-      email:user.email
+    if (!email || !password) {
+      return res.status(400).json({ message: "please provide email and password" });
     }
-  })
-}
-/**
- * @name loginUser
- * @description user login her,expect email and password
- * @access Public
- */
-async function loginUser(req,res){
-const {email,password}=req.body
-const user= await userModle.findOne({email})
-if(!user){
- return res.status(400).json({message:"user does not exist"})
-}
 
-const compare= await bcrypt.compare(password,user.password)
+    const user = await userModel.findOne({ email });
+    const match = user && (await bcrypt.compare(password, user.password));
 
-if(!compare){
-return res.status(400).json({message:"password does not match"})
-}
-const token=jwt.sign(
-  {id:user._id,userName:user.userName},
-process.env.JWT_SECRET,
-{expiresIn:"1d"}
-)
-res.cookie("token",token)
+    if (!match) {
+      return res.status(400).json({ message: "invalid email or password" });
+    }
 
- return res.status(200).json({message:"logedIn successfully",
-  user:{
-    id:user._id,
-    userName:user.userName,
-    email:user.email
+    res.cookie("token", signToken(user), cookieOptions);
+
+    return res.status(200).json({
+      message: "logged in successfully",
+      user: { id: user._id, userName: user.userName, email: user.email },
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "server error" });
   }
-})
 }
 
-/**
- * @name logOutUser
- * @description deleting token and blackListing them in mongoDB
- * @access Public
- */
-async function logoutUser(req,res){
-const token=req.cookies.token
-if(token){
-  await tokenBlackListModel.create({token})
-}
- res.clearCookie("token")
+async function logoutUser(req, res) {
+  try {
+    const token = req.cookies.token;
+    if (token) {
+      await tokenBlackListModel.create({ token });
+    }
 
- res.status(200).json({message:"user log out successfully"})
+    const { maxAge, ...clearOptions } = cookieOptions; // same options, minus maxAge
+    res.clearCookie("token", clearOptions);
 
-}
-/**
- * @name getMe
- * @description giving information of user 
- * @access Private
- */
-async function getMe(req,res) {
-  const user=await userModle.findById(req.user.id)
-
-  return res.status(200).json({
-    message:"user detail fetch successfully",
-user:{
-  id:user._id,
-  userName:user.userName,
-  email:user.email
-}
-  })
+    return res.status(200).json({ message: "user logged out successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "server error" });
+  }
 }
 
+async function getMe(req, res) {
+  try {
+    const user = await userModel.findById(req.user.id);
 
-module.exports = { registerUser, loginUser, logoutUser,getMe};
+    if (!user) {
+      return res.status(404).json({ message: "user not found" });
+    }
+
+    return res.status(200).json({
+      message: "user detail fetched successfully",
+      user: { id: user._id, userName: user.userName, email: user.email },
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "server error" });
+  }
+}
+
+module.exports = { registerUser, loginUser, logoutUser, getMe };

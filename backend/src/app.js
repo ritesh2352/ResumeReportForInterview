@@ -1,8 +1,11 @@
 const express = require('express')
+require("dotenv").config(); 
 const cors = require('cors')
 const cookieParser=require("cookie-parser")
 
 const app=express()
+
+app.set("trust proxy", 1);
 
 /* requre all the routes here */
 const authRouter=require('./routes/authRoute')
@@ -11,7 +14,7 @@ const interviewRouter= require('./routes/interviewRoute')
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
-  origin:"http://localhost:5173",
+  origin:process.env.FRONTEND_URL,
   credentials:true
 }))
 
